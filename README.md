@@ -1,29 +1,78 @@
 # Estrutura de Diretórios - Gerador JSON
 
-Este projeto tem como objetivo **gerar automaticamente um arquivo JSON** contendo a estrutura de diretórios de um projeto, de forma organizada e personalizável.
+Este projeto tem como objetivo **gerar automaticamente um arquivo JSON** contendo a estrutura de diretórios de um projeto, de forma organizada, personalizável e fácil de integrar em outros fluxos. Ideal para documentações, análises de arquitetura ou visualização de estrutura de código.
+
+---
 
 ## 📁 O que o script faz?
 
-O script `main.py` percorre recursivamente os diretórios e subdiretórios a partir do local onde ele é executado, e gera um arquivo chamado `project_structure.json` com a hierarquia completa dos arquivos e pastas, ignorando elementos definidos por regras específicas.
+O script `structure.py` percorre recursivamente os diretórios a partir do local onde ele está salvo e gera um arquivo `project_structure.json` contendo:
+
+* Hierarquia completa de pastas e arquivos
+* Nomes e tipos (`folder` ou `file`)
+* Estrutura organizada e padronizada
+* Pastas e arquivos ignorados conforme regras configuráveis
+* Ordenação alfabética automática
+
+Ele é **simples**, **rápido** e **não depende de nenhuma biblioteca externa**.
 
 ---
 
 ## ⚙️ Regras de Ignoração
 
-Existem duas listas de controle para ignorar arquivos/pastas:
+Existem duas categorias principais de regras para controlar o que será exibido no JSON final.
 
-- **IGNORE_ALL**: ignora arquivos e pastas completamente (ex: `venv`, `.git`, `README.md`).
-- **IGNORE_FILES_IN**: ignora **apenas arquivos** dentro de certas pastas (mas permite mostrar suas subpastas).
+### **1. IGNORE_ALL**
+
+Ignora completamente **arquivos ou pastas**, independentemente do nível em que aparecem.
+
+Exemplos típicos:
+
+* `venv`
+* `.git`
+* `node_modules`
+* `README.md`
+* `.env`
+
+Se qualquer parte do caminho corresponder ao nome, o item inteiro é ignorado.
 
 ---
 
-## 📄 Exemplo de saída
+### **2. IGNORE_FILES_IN**
 
-Um arquivo `project_structure.json` será gerado com a seguinte estrutura:
+Ignora **apenas arquivos** dentro de pastas específicas (por caminho relativo), mas continua mostrando:
+
+* A pasta
+* Suas subpastas
+* Arquivos dentro das subpastas
+
+Exemplos:
+
+```python
+IGNORE_FILES_IN = [
+    "logs",                # Ignora apenas arquivos em ./logs
+    "src/temp/uploads"     # Ignora apenas arquivos em src/temp/uploads
+]
+```
+
+### ✔ Exemplos de comportamento
+
+| Caminho                      | Regra aplicada           | Será listado? |
+| ---------------------------- | ------------------------ | ------------- |
+| `logs/error.txt`             | IGNORE_FILES_IN=["logs"] | ❌ Não         |
+| `logs/api/info.json`         | Subpasta de logs         | ✔ Sim         |
+| `src/services/logs/test.txt` | Pasta diferente          | ✔ Sim         |
+| `node_modules/react`         | IGNORE_ALL               | ❌ Não         |
+
+---
+
+## 📄 Exemplo de saída JSON
+
+Um arquivo `project_structure.json` será gerado como este:
 
 ```json
 {
-    "name": "nome_da_pasta_raiz",
+    "name": "meu_projeto",
     "type": "folder",
     "children": [
         {
@@ -33,10 +82,14 @@ Um arquivo `project_structure.json` será gerado com a seguinte estrutura:
                 {
                     "name": "main.py",
                     "type": "file"
+                },
+                {
+                    "name": "services",
+                    "type": "folder",
+                    "children": []
                 }
             ]
-        },
-        ...
+        }
     ]
 }
 ```
@@ -45,33 +98,61 @@ Um arquivo `project_structure.json` será gerado com a seguinte estrutura:
 
 ## 🚀 Como usar
 
-1. Clone o repositório ou copie os arquivos para o seu projeto.
-2. Execute o script:
+### 1. Clone ou copie o repositório
 
 ```bash
-python structure.py
+git clone https://github.com/byetevinn/save-project-structure
 ```
 
-3. O arquivo `project_structure.json` será criado com a estrutura do projeto.
+### 2. Execute o script
+
+```bash
+python3 structure.py
+```
+
+### 3. O arquivo será gerado
+
+```
+project_structure.json
+```
 
 ---
 
 ## 📦 Arquivos do Projeto
 
-- `.gitignore`: configurações de arquivos/pastas a serem ignorados pelo Git.
-- `structure.py`: script principal para gerar a estrutura JSON.
-- `README.md`: este arquivo de documentação.
+| Arquivo        | Função                            |
+| -------------- | --------------------------------- |
+| `structure.py` | Script principal que gera o JSON  |
+| `.gitignore`   | Configurações de ignorar para Git |
+| `README.md`    | Este documento                    |
 
 ---
 
 ## 🧠 Requisitos
 
-- Python 3.6+
+* Python **3.6+**
+* Não requer bibliotecas adicionais
+
+---
+
+## 🔮 Roadmap (Futuras Melhorias)
+
+* **CLI Tool:** permitir uso via linha de comando (`project-structure --ignore logs`).
+* Suporte a múltiplos diretórios de entrada.
+* Exportação em outros formatos: **YAML**, **Markdown**, **Tree view**.
+* Padrões glob (`**/*.log`) e regex.
+* Opção para ignorar subpastas recursivamente.
+
+---
+
+## 👤 Autor
+
+Desenvolvido por **Stevan Padilha**.
+
+Sinta-se à vontade para contribuir, sugerir melhorias ou abrir issues.
 
 ---
 
 ## 📝 Licença
 
-Este projeto está sob a licença MIT. Sinta-se livre para utilizar e modificar conforme necessário.
-
----
+Este projeto está sob a licença **MIT**. Você pode usar e modificar livremente.
