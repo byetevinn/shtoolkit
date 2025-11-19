@@ -2,16 +2,13 @@ import os
 import json
 
 # ===========================================
-# Este script gera um arquivo JSON contendo
-# a estrutura de diretórios de um projeto.
-# Ele ignora arquivos e/ou pastas conforme
-# duas listas de controle:
-# - IGNORE_ALL: ignora arquivos/pastas por completo
-# - IGNORE_FILES_IN: ignora apenas arquivos dentro de pastas específicas,
-#                    mas permite que suas subpastas apareçam
+# Script para gerar um JSON da estrutura de diretórios do projeto
+# Com regras avançadas de ignorar:
+# - IGNORE_ALL       → Ignora arquivos OU pastas pelo caminho exato ou nome
+# - IGNORE_FILES_IN  → Ignora apenas arquivos dentro de uma pasta (por caminho)
 # ===========================================
 
-# Lista de nomes a serem completamente ignorados (arquivos ou pastas)
+# Ignora arquivos/pastas completamente (nome OU caminho relativo)
 IGNORE_ALL = [
     "structure.py",
     "project_structure.json",
@@ -23,48 +20,90 @@ IGNORE_ALL = [
     ".env",
 ]
 
-# Lista de pastas onde os arquivos devem ser ignorados (mas subpastas são permitidas)
+# Ignora arquivos dentro das pastas especificadas (por caminho relativo)
+# Exemplo:
+# IGNORE_FILES_IN = ["logs"] → ignora arquivos somente em ./logs
+# IGNORE_FILES_IN = ["src/services/cache"] → ignora arquivos só nessa pasta
 IGNORE_FILES_IN = []
 
 
-def build_structure(path, root_path):
-    """Cria recursivamente a estrutura de diretórios, ignorando conforme regras globais"""
-    relative_path = os.path.relpath(path, root_path)
-    parts = relative_path.split(os.sep)
+def normalize(path: str) -> str:
+    """Normaliza caminhos para evitar problemas com barras e diferenças de SO."""
+    return path.replace("\\", "/").strip("/")
 
+
+def should_ignore_all(relative_path: str, parts: list[str]) -> bool:
+    """Verifica se o caminho deve ser ignorado completamente."""
+    # Ignora pelo nome da pasta/arquivo em qualquer lugar
     if any(part in IGNORE_ALL for part in parts):
+        return True
+
+    # Ignora pelo caminho relativo exatamente igual
+    if normalize(relative_path) in [normalize(p) for p in IGNORE_ALL]:
+        return True
+
+    return False
+
+
+def should_ignore_file(relative_path: str) -> bool:
+    """Verifica se um arquivo deve ser ignorado com base em IGNORE_FILES_IN."""
+    rel = normalize(relative_path)
+
+    for folder in IGNORE_FILES_IN:
+        folder_norm = normalize(folder)
+
+        # Se o arquivo estiver dentro da pasta especificada
+        if rel.startswith(folder_norm + "/"):
+            # E o caminho relativo tem mais partes → é arquivo dentro dessa pasta
+            return True
+
+    return False
+
+
+def build_structure(path, root_path):
+    """Cria recursivamente a estrutura do projeto."""
+    relative_path = os.path.relpath(path, root_path)
+    relative_path_norm = normalize(relative_path)
+    parts = relative_path_norm.split("/")
+
+    # Regras de ignorar total
+    if should_ignore_all(relative_path_norm, parts):
         return None
 
     name = os.path.basename(path)
 
+    # Pasta
     if os.path.isdir(path):
         children = []
         for item in sorted(os.listdir(path)):
             full_path = os.path.join(path, item)
-            child_structure = build_structure(full_path, root_path)
-            if child_structure:
-                children.append(child_structure)
+            child = build_structure(full_path, root_path)
+            if child:
+                children.append(child)
         return {"name": name, "type": "folder", "children": children}
+
+    # Arquivo
     else:
-        if any(part in IGNORE_FILES_IN for part in parts[:-1]):
+        if should_ignore_file(relative_path_norm):
             return None
+
         return {"name": name, "type": "file"}
 
 
-# Define o diretório base como o diretório onde o script está salvo
+# =======================================================
+# Execução
+# =======================================================
+
 script_dir = os.path.dirname(os.path.abspath(__file__))
 root_path = script_dir
 root_name = os.path.basename(root_path)
 
-# Cria a estrutura
 structure = build_structure(root_path, root_path)
 
 if structure:
     structure["name"] = root_name
 
-# Caminho completo para o arquivo JSON
 output_path = os.path.join(script_dir, "project_structure.json")
 
-# Salva o JSON
 with open(output_path, "w", encoding="utf-8") as f:
     json.dump(structure, f, indent=4, ensure_ascii=False)
