@@ -1,0 +1,25 @@
+# Development
+node_modules
+.git
+.gitignore
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+
+# Editor
+.vscode
+.idea
+
+# Tests / temp
+tests
+coverage
+tmp
+
+# Local configs
+.shtk.json
+
+# Misc
+*.md~

@@ -1,0 +1,42 @@
+{
+  "name": "@byetevinn/shtoolkit",
+  "version": "1.0.1",
+  "description": "Modern CLI to explore project structure, copy file content, and streamline developer workflows.",
+  "bin": {
+    "shtk": "bin/cli.js"
+  },
+  "type": "module",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "files": [
+    "bin",
+    "src",
+    "docs",
+    "README.md",
+    "README.pt-BR.md"
+  ],
+  "keywords": [
+    "cli",
+    "developer-tools",
+    "productivity",
+    "filesystem",
+    "tree",
+    "copy-files",
+    "code-analysis",
+    "shell",
+    "automation"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/byetevinn/shtoolkit.git"
+  },
+  "bugs": {
+    "url": "https://github.com/byetevinn/shtoolkit/issues"
+  },
+  "homepage": "https://github.com/byetevinn/shtoolkit#readme",
+  "dependencies": {
+    "yaml": "^2.8.3"
+  }
+}

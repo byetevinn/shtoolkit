@@ -1,0 +1,22 @@
+{
+  "tree": {
+    "ignore": {
+      "names": [
+        "node_modules",
+        ".git",
+        "dist",
+        "venv",
+        "__pycache__"
+      ],
+      "filesIn": [
+        "screenshots",
+        "uploads"
+      ],
+      "patterns": [
+        "*.log",
+        "*.tmp",
+        "*.lock"
+      ]
+    }
+  }
+}
