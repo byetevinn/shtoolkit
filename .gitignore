@@ -7,3 +7,4 @@ copied_content.txt
 .DS_Store
 .env
 *.log
+*.tgz
