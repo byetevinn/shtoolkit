@@ -10,10 +10,12 @@ Modern CLI to **explore, filter and copy project content** with consistency and 
 
 * 🌳 Generate project tree (`tree`)
 * 📋 Copy file contents (`copy-content` / `cpc`) with smart output delivery (text clipboard or automatic Windows/WSL file attachment)
+* 🩺 Diagnose local environment (`doctor`)
+* 🔀 Git-aware file selection (`--changed`, `--staged`, `--untracked`, `--all-changes`) for clipboard copying
 * ⚙️ Centralized config via `.shtk.json` (for `tree` ignores and `output` settings)
 * 🔍 Ignore rules by name, folder and glob
 * 📦 JSON and YAML output
-* 📊 Detailed statistics
+* 📊 Detailed statistics & Dry-run analysis (`--dry-run`) with character and token count estimation
 * 🚫 Robust error handling
 
 ---
@@ -69,6 +71,29 @@ shtk init
 ```
 
 👉 Full docs: [init](./docs/commands/init.command.md)
+
+---
+
+### 🩺 Doctor
+
+Diagnose your local environment (Node, WSL, PowerShell, clipboard access).
+
+```bash
+shtk doctor
+```
+
+👉 Full docs: [doctor](./docs/commands/doctor.command.md)
+
+---
+
+### 🔢 Version
+
+Show the installed version.
+
+```bash
+shtk version
+# or shtk -v / shtk --version
+```
 
 ---
 
@@ -163,6 +188,8 @@ children: []
 ⏭ Skipped     : 0
 ❌ Errors      : 0
 📄 Total Lines : 1213
+🔢 Characters  : 4852
+🧠 Est. Tokens : ~1213
 ```
 
 ---

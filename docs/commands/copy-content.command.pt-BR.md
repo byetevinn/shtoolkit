@@ -78,20 +78,52 @@ Modo automático com limite customizado de caracteres:
 shtk cpc src --copy-as auto --text-max-chars 3000
 ```
 
+### Integração com Git & Exemplos de Dry Run
+
+Análise em modo Dry Run (sem copiar ou criar arquivos):
+```bash
+shtk cpc src --dry-run
+```
+
+Copiar apenas arquivos modificados não staged (unstaged):
+```bash
+shtk cpc --changed
+```
+
+Copiar apenas arquivos staged para commit:
+```bash
+shtk cpc --staged
+```
+
+Copiar arquivos untracked (não rastreados):
+```bash
+shtk cpc --untracked
+```
+
+Copiar a união de arquivos modificados (staged, unstaged e untracked) em modo dry-run:
+```bash
+shtk cpc --all-changes --dry-run
+```
+
 ---
 
 ## Opções
 
-| Opção            | Descrição                                |
-| ---------------- | ---------------------------------------- |
-| `--stdout`       | Imprime no terminal                      |
-| `--file`         | Salva em arquivo                         |
-| `--output`       | Define o nome do arquivo                 |
-| `--paths-only`   | Mostra apenas os caminhos (sem conteúdo) |
-| `--no-separator` | Remove separadores entre blocos          |
-| `--copy-as`      | Define o modo de cópia (`text`, `file`, `auto`) |
-| `--text-max-chars` | Limite de caracteres antes de gerar arquivo |
-| `-h, --help`     | Exibe ajuda                              |
+| Opção              | Descrição                                                 |
+| ------------------ | --------------------------------------------------------- |
+| `--stdout`         | Imprime no terminal                                       |
+| `--file`           | Salva em arquivo                                          |
+| `--output`         | Define o nome do arquivo                                  |
+| `--paths-only`     | Mostra apenas os caminhos (sem conteúdo)                  |
+| `--no-separator`   | Remove separadores entre blocos                           |
+| `--copy-as`        | Define o modo de cópia (`text`, `file`, `auto`)           |
+| `--text-max-chars` | Limite de caracteres antes de gerar arquivo               |
+| `--dry-run`        | Analisa os arquivos e exibe o resumo sem realizar a cópia |
+| `--changed`        | Copia os arquivos modificados unstaged                    |
+| `--staged`         | Copia os arquivos staged modificados                      |
+| `--untracked`      | Copia os arquivos untracked não rastreados                |
+| `--all-changes`    | Copia a união dos arquivos modificados staged, unstaged e untracked |
+| `-h, --help`       | Exibe ajuda                                               |
 
 ---
 
@@ -122,6 +154,8 @@ shtk cpc src --copy-as auto --text-max-chars 3000
 ⏭ Skipped     : X
 ❌ Errors      : X
 📄 Total Lines : X
+🔢 Characters  : X
+🧠 Est. Tokens : ~X
 ```
 
 ### Detalhes (quando houver)

@@ -43,6 +43,27 @@ Inicializa a configuração do projeto.
 
 ---
 
+### 🩺 doctor
+
+Diagnostica a configuração do ambiente local.
+
+* Verifica versões do Node e sistema operacional
+* Verifica compatibilidade entre o Windows e WSL
+* Valida comandos e utilitários da área de transferência
+
+👉 [Ver documentação](./commands/doctor.command.pt-BR.md)
+
+---
+
+### 🔢 version
+
+Exibe a versão instalada do shtoolkit.
+
+* Suporte aos parâmetros padrão de versionamento CLI
+* Lê dinamicamente do arquivo package.json
+
+---
+
 ## Observações
 
 * Os comandos foram projetados para serem **simples e combináveis**

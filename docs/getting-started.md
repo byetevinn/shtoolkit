@@ -79,6 +79,7 @@ shtk cpc src --stdout
 * Use `tree` for structure visualization
 * Use `copy-content` for extracting code or content
 * Use `init` to customize ignore rules and output settings
+* Use Git-aware selective copying (`--changed`, `--staged`, `--all-changes`) to easily copy specific files to your clipboard.
 * Large copy tasks automatically generate temporary files and copy them to the Windows/WSL clipboard for easy attachment in AI tools.
 
 ---

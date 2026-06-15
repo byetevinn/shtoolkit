@@ -79,6 +79,7 @@ shtk cpc src --stdout
 * Use `tree` para visualizar a estrutura
 * Use `copy-content` para extrair código ou conteúdo
 * Use `init` para personalizar regras de ignore e de saída (output)
+* Use a cópia seletiva integrada ao Git (`--changed`, `--staged`, `--all-changes`) para copiar arquivos específicos de forma simples.
 * Grandes seleções de cópia geram automaticamente arquivos temporários e os copiam para o clipboard do Windows/WSL para facilidade no anexo em ferramentas de IA.
 
 ---

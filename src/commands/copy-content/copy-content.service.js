@@ -97,6 +97,11 @@ export function parseCopyContentArgs(args) {
     paths: [],
     copyAs: null,
     textMaxChars: null,
+    dryRun: false,
+    changed: false,
+    staged: false,
+    allChanges: false,
+    untracked: false,
   };
 
   for (let index = 0; index < args.length; index += 1) {
@@ -154,10 +159,45 @@ export function parseCopyContentArgs(args) {
       continue;
     }
 
+    if (arg === '--dry-run') {
+      options.dryRun = true;
+      continue;
+    }
+
+    if (arg === '--changed') {
+      options.changed = true;
+      continue;
+    }
+
+    if (arg === '--staged') {
+      options.staged = true;
+      continue;
+    }
+
+    if (arg === '--untracked') {
+      options.untracked = true;
+      continue;
+    }
+
+    if (arg === '--all-changes') {
+      options.allChanges = true;
+      continue;
+    }
+
     options.paths.push(...splitPathArgument(arg));
   }
 
   options.paths = uniqueList(options.paths);
+
+  const gitFlagsCount = (options.changed ? 1 : 0) + (options.staged ? 1 : 0) + (options.untracked ? 1 : 0) + (options.allChanges ? 1 : 0);
+
+  if (gitFlagsCount > 0 && options.paths.length > 0) {
+    throw new Error('❌ Cannot combine explicit paths with --changed, --staged, --untracked, or --all-changes.');
+  }
+
+  if (gitFlagsCount > 1) {
+    throw new Error('❌ Cannot combine Git-aware flags (--changed, --staged, --untracked, --all-changes). Choose only one.');
+  }
 
   return options;
 }
@@ -179,6 +219,7 @@ export function collectCopyContent(inputPaths, options = {}) {
     skipped: 0,
     errors: 0,
     lines: 0,
+    characters: 0,
   };
 
   const state = {
@@ -236,6 +277,7 @@ export function collectCopyContent(inputPaths, options = {}) {
 
       stats.success += 1;
       stats.lines += countLines(content);
+      stats.characters += content.length;
     } catch {
       details.failedRead.push(filePath);
       stats.errors += 1;
@@ -261,7 +303,16 @@ export function collectCopyContent(inputPaths, options = {}) {
   };
 }
 
-export function formatCopyContentSummary(stats) {
+export function formatCopyContentSummary(stats, finalOutputOrOverride) {
+  let characters = stats.characters;
+  if (typeof finalOutputOrOverride === 'string') {
+    characters = finalOutputOrOverride.length;
+  } else if (finalOutputOrOverride && typeof finalOutputOrOverride.characters === 'number') {
+    characters = finalOutputOrOverride.characters;
+  } else if (typeof finalOutputOrOverride === 'number') {
+    characters = finalOutputOrOverride;
+  }
+  const estTokens = Math.ceil(characters / 4);
   return `
 📊 Copy Content Result
 
@@ -270,6 +321,8 @@ export function formatCopyContentSummary(stats) {
 ⏭ Skipped     : ${stats.skipped}
 ❌ Errors      : ${stats.errors}
 📄 Total Lines : ${stats.lines}
+🔢 Characters  : ${characters}
+🧠 Est. Tokens : ~${estTokens}
 `.trim();
 }
 

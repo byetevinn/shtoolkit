@@ -43,6 +43,27 @@ Initialize project configuration.
 
 ---
 
+### 🩺 doctor
+
+Diagnose your local environment setup.
+
+* Checks Node and OS versions
+* Checks WSL/Windows environment compatibility
+* Validates clipboard commands and tools
+
+👉 [View documentation](./commands/doctor.command.md)
+
+---
+
+### 🔢 version
+
+Show installed version of shtoolkit.
+
+* Standard CLI versioning flag support
+* Reads dynamically from package.json
+
+---
+
 ## Notes
 
 * Commands are designed to be **simple and composable**

@@ -78,20 +78,52 @@ Auto mode with a custom character limit:
 shtk cpc src --copy-as auto --text-max-chars 3000
 ```
 
+### Git-aware & Dry Run Overrides
+
+Dry run analysis:
+```bash
+shtk cpc src --dry-run
+```
+
+Copy only unstaged modified files:
+```bash
+shtk cpc --changed
+```
+
+Copy staged files:
+```bash
+shtk cpc --staged
+```
+
+Copy untracked files:
+```bash
+shtk cpc --untracked
+```
+
+Copy all changes (unstaged, staged, and untracked) in dry-run mode:
+```bash
+shtk cpc --all-changes --dry-run
+```
+
 ---
 
 ## Options
 
-| Option           | Description                           |
-| ---------------- | ------------------------------------- |
-| `--stdout`       | Print output to terminal              |
-| `--file`         | Save output to file                   |
-| `--output`       | Define output file name               |
-| `--paths-only`   | Output only file paths (no content)   |
-| `--no-separator` | Remove separators between file blocks |
-| `--copy-as`      | Set copy mode (`text`, `file`, `auto`) |
-| `--text-max-chars` | Max characters before copying as file |
-| `-h, --help`     | Show help                             |
+| Option             | Description                                   |
+| ------------------ | --------------------------------------------- |
+| `--stdout`         | Print output to terminal                      |
+| `--file`           | Save output to file                           |
+| `--output`         | Define output file name                       |
+| `--paths-only`     | Output only file paths (no content)           |
+| `--no-separator`   | Remove separators between file blocks         |
+| `--copy-as`        | Set copy mode (`text`, `file`, `auto`)        |
+| `--text-max-chars` | Max characters before copying as file         |
+| `--dry-run`        | Analyze files and show summary without copying|
+| `--changed`        | Copy unstaged modified files                  |
+| `--staged`         | Copy staged modified files                    |
+| `--untracked`      | Copy untracked files                          |
+| `--all-changes`    | Copy union of staged, unstaged, and untracked modified files |
+| `-h, --help`       | Show help                                     |
 
 ---
 
@@ -122,6 +154,8 @@ shtk cpc src --copy-as auto --text-max-chars 3000
 ⏭ Skipped     : X
 ❌ Errors      : X
 📄 Total Lines : X
+🔢 Characters  : X
+🧠 Est. Tokens : ~X
 ```
 
 ### Details (when applicable)

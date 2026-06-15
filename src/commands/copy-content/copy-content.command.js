@@ -1,12 +1,13 @@
 import fs from 'node:fs';
 import { deliverOutput } from '../../shared/output/output.delivery.js';
-import { formatCopyContentOutput } from './copy-content.formatters.js';
+import { formatCopyContentOutput, formatCopyContentDryRun } from './copy-content.formatters.js';
 import {
   collectCopyContent,
   formatCopyContentDetails,
   formatCopyContentSummary,
   parseCopyContentArgs,
 } from './copy-content.service.js';
+import { getGitFiles } from './git-files.js';
 
 export function runCopyContentCommand(args) {
   let options;
@@ -32,6 +33,7 @@ Examples:
   shtk cpc "src
 docs
 README.md"
+  shtk cpc --changed --dry-run
 
 Options:
   --stdout                 Print output to terminal
@@ -41,13 +43,46 @@ Options:
   --no-separator           Remove separators between file blocks
   --copy-as <text|file|auto>  Set the copy mode (default: auto)
   --text-max-chars <n>     Set maximum characters before saving to file (default: 3000)
+  --dry-run                Analyze files and show summary without copying
+  --changed                Copy files modified in working tree (unstaged)
+  --staged                 Copy files staged for commit
+  --untracked              Copy untracked files
+  --all-changes            Copy union of staged, unstaged, and untracked modified files
   -h, --help               Show help
 `.trim(),
     );
     return;
   }
 
-  if (options.paths.length === 0) {
+  const hasGitOptions = options.changed || options.staged || options.untracked || options.allChanges;
+
+  if (hasGitOptions) {
+    try {
+      options.paths = getGitFiles({
+        changed: options.changed,
+        staged: options.staged,
+        untracked: options.untracked,
+        allChanges: options.allChanges,
+      });
+
+      if (options.paths.length === 0) {
+        if (options.staged) {
+          console.log('No staged files found.');
+        } else if (options.changed) {
+          console.log('No changed files found.');
+        } else if (options.untracked) {
+          console.log('No untracked files found.');
+        } else if (options.allChanges) {
+          console.log('No changes found.');
+        }
+        return;
+      }
+    } catch (error) {
+      console.error(error.message);
+      process.exitCode = 1;
+      return;
+    }
+  } else if (options.paths.length === 0) {
     console.error('No input paths provided.');
     console.error(
       'Usage: shtk copy-content [paths...] [options] or shtk cpc [paths...] [options]',
@@ -81,12 +116,22 @@ Options:
     noSeparator: options.noSeparator,
   });
 
+  if (options.dryRun) {
+    const dryRunRes = formatCopyContentDryRun(result, output, options);
+    console.log(dryRunRes);
+    if (detailsOutput) {
+      console.log();
+      console.log(detailsOutput);
+    }
+    return;
+  }
+
   if (options.file) {
     const outputFile = options.output || 'copied_content.txt';
     fs.writeFileSync(outputFile, output, 'utf8');
     console.log(`File generated: ${outputFile}`);
     console.log();
-    console.log(formatCopyContentSummary(result.stats));
+    console.log(formatCopyContentSummary(result.stats, output));
 
     if (detailsOutput) {
       console.log();
@@ -99,7 +144,7 @@ Options:
   if (options.stdout) {
     console.log(output);
     console.log();
-    console.log(formatCopyContentSummary(result.stats));
+    console.log(formatCopyContentSummary(result.stats, output));
 
     if (detailsOutput) {
       console.log();
@@ -133,7 +178,7 @@ Options:
     }
 
     console.log();
-    console.log(formatCopyContentSummary(result.stats));
+    console.log(formatCopyContentSummary(result.stats, output));
 
     if (detailsOutput) {
       console.log();

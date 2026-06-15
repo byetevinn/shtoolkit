@@ -10,10 +10,12 @@ CLI moderna para **explorar, filtrar e copiar conteúdo de projetos** com consis
 
 * 🌳 Gerar árvore de diretórios (`tree`)
 * 📋 Copiar conteúdo de arquivos (`copy-content` / `cpc`) com entrega inteligente de saída (área de transferência de texto ou anexo real de arquivo no Windows/WSL automaticamente)
+* 🩺 Diagnosticar o ambiente local (`doctor`)
+* 🔀 Seleção de arquivos integrada ao Git (`--changed`, `--staged`, `--untracked`, `--all-changes`)
 * ⚙️ Configuração centralizada via `.shtk.json` (para ignores de `tree` e configurações de `output`)
 * 🔍 Regras de ignore por nome, pasta e glob
 * 📦 Saída em JSON e YAML
-* 📊 Estatísticas detalhadas
+* 📊 Estatísticas detalhadas & análise Dry-run (`--dry-run`) com contagem de caracteres e estimativa de tokens
 * 🚫 Tratamento de erros robusto
 
 ---
@@ -69,6 +71,29 @@ shtk init
 ```
 
 👉 Documentação: [init](./docs/commands/init.command.pt-BR.md)
+
+---
+
+### 🩺 Doctor
+
+Diagnostica o ambiente local (Node, WSL, PowerShell, acesso à área de transferência).
+
+```bash
+shtk doctor
+```
+
+👉 Documentação: [doctor](./docs/commands/doctor.command.pt-BR.md)
+
+---
+
+### 🔢 Version
+
+Mostra a versão instalada.
+
+```bash
+shtk version
+# ou shtk -v / shtk --version
+```
 
 ---
 
@@ -163,6 +188,8 @@ children: []
 ⏭ Skipped     : 0
 ❌ Errors      : 0
 📄 Total Lines : 1213
+🔢 Characters  : 4852
+🧠 Est. Tokens : ~1213
 ```
 
 ---
