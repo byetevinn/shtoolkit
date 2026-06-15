@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import { parseArgs } from '../../shared/args.js';
-import { copyToClipboard } from '../../shared/clipboard.js';
+import { deliverOutput } from '../../shared/output/output.delivery.js';
 import { loadTreeConfig } from '../../config/tree.config.js';
 import { buildTree } from './tree.service.js';
 import { formatTree } from './tree.formatters.js';
@@ -37,7 +37,14 @@ function getDefaultOutputFile(options) {
 }
 
 export function runTreeCommand(args) {
-  const options = parseArgs(args);
+  let options;
+  try {
+    options = parseArgs(args);
+  } catch (error) {
+    console.error(error.message);
+    process.exitCode = 1;
+    return;
+  }
 
   if (options.help) {
     console.log(
@@ -48,15 +55,17 @@ Usage:
   shtk tree [options]
 
 Options:
-  --stdout           Print output to terminal
-  --file             Save output to file
-  --output <file>    Define output file name
-  --pretty           Pretty-print output
-  --yaml             Output as YAML
-  --depth <number>   Limit traversal depth
-  --dirs-only        Include directories only
-  --path <dir>       Define target path
-  -h, --help         Show help
+  --stdout                 Print output to terminal
+  --file                   Save output to file
+  --output <file>          Define output file name
+  --pretty                 Pretty-print output
+  --yaml                   Output as YAML
+  --depth <number>         Limit traversal depth
+  --dirs-only              Include directories only
+  --path <dir>             Define target path
+  --copy-as <text|file|auto>  Set the copy mode (default: auto)
+  --text-max-chars <n>     Set maximum characters before saving to file (default: 3000)
+  -h, --help               Show help
 `.trim(),
     );
     return;
@@ -114,20 +123,40 @@ Options:
     return;
   }
 
-  const copied = copyToClipboard(output);
-
-  if (!copied) {
-    console.error('❌ Clipboard is not available.');
-    process.exitCode = 1;
-    return;
+  const deliveryConfig = {};
+  if (options.copyAs) {
+    deliveryConfig.mode = options.copyAs;
+  }
+  if (options.textMaxChars !== null) {
+    deliveryConfig.textMaxChars = options.textMaxChars;
   }
 
-  console.log('✅ Tree copied to clipboard');
-  console.log();
-  console.log(formatTreeSummary(stats));
+  const tempFileName = options.yaml ? 'shtoolkit-tree.yaml' : 'shtoolkit-tree.json';
 
-  if (detailsOutput) {
+  try {
+    const delivery = deliverOutput({
+      content: output,
+      fileName: tempFileName,
+      config: { output: deliveryConfig },
+    });
+
+    if (delivery.delivery === 'text') {
+      console.log('✅ Project tree copied to clipboard as text');
+    } else if (delivery.delivery === 'file') {
+      console.log('✅ Project tree file copied to clipboard');
+      const displayPath = delivery.file.windowsPath || delivery.file.filePath;
+      console.log(`📄 File: ${displayPath}`);
+    }
+
     console.log();
-    console.log(detailsOutput);
+    console.log(formatTreeSummary(stats));
+
+    if (detailsOutput) {
+      console.log();
+      console.log(detailsOutput);
+    }
+  } catch (error) {
+    console.error(error.message);
+    process.exitCode = 1;
   }
 }

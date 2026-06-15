@@ -13,7 +13,8 @@ This section provides an overview of all available commands in **shtoolkit**.
 Copy file contents from one or more paths.
 
 * Flexible input (files, folders, multiline)
-* No configuration dependency
+* Relative paths format
+* Smart output delivery support (text or file clipboard)
 
 👉 [View documentation](./commands/copy-content.command.md)
 
@@ -25,6 +26,7 @@ Visualize project structure.
 
 * Supports JSON, YAML, and pretty formats
 * Uses `.shtk.json` for configuration
+* Smart output delivery support (text or file clipboard)
 
 👉 [View documentation](./commands/tree.command.md)
 

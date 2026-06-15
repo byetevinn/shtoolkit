@@ -74,6 +74,28 @@ shtk tree --dirs-only
 shtk tree --path ./src
 ```
 
+### Clipboard overrides
+
+Force copy as text:
+```bash
+shtk tree --copy-as text
+```
+
+Force copy as file:
+```bash
+shtk tree --copy-as file
+```
+
+Auto mode with a custom character limit:
+```bash
+shtk tree --copy-as auto --text-max-chars 3000
+```
+
+Force copy as YAML file:
+```bash
+shtk tree --yaml --copy-as file
+```
+
 ---
 
 ## Options
@@ -88,6 +110,8 @@ shtk tree --path ./src
 | `--depth <number>` | Limit traversal depth    |
 | `--dirs-only`      | Include only directories |
 | `--path <dir>`     | Define target path       |
+| `--copy-as`        | Set copy mode (`text`, `file`, `auto`) |
+| `--text-max-chars` | Max characters before copying as file |
 | `-h, --help`       | Show help                |
 
 ---
@@ -99,17 +123,26 @@ shtk tree --path ./src
 * Traverses directories recursively
 * Sorts files and folders alphabetically
 * Uses JSON as the default output format
+* Integrates with `deliverOutput` to copy output intelligently as text or a temporary file
 
 ---
 
 ## Configuration (.shtk.json)
 
-The `tree` command respects ignore rules defined in `.shtk.json`.
+The `tree` command respects ignore rules and output configuration defined in `.shtk.json`.
 
 ### Example
 
 ```json
 {
+  "output": {
+    "mode": "auto",
+    "textMaxChars": 3000,
+    "file": {
+      "location": "windowsTemp",
+      "clipboard": "file"
+    }
+  },
   "tree": {
     "ignore": {
       "names": ["node_modules", ".git"],

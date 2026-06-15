@@ -30,7 +30,7 @@ npx @byetevinn/shtoolkit tree
 shtk init
 ```
 
-This creates a `.shtk.json` file to customize behavior.
+This creates a `.shtk.json` file to customize behavior (ignore rules, smart clipboard limits, etc.).
 
 ---
 
@@ -78,7 +78,8 @@ shtk cpc src --stdout
 
 * Use `tree` for structure visualization
 * Use `copy-content` for extracting code or content
-* Use `init` to customize ignore rules
+* Use `init` to customize ignore rules and output settings
+* Large copy tasks automatically generate temporary files and copy them to the Windows/WSL clipboard for easy attachment in AI tools.
 
 ---
 

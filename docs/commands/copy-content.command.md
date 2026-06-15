@@ -4,7 +4,9 @@
 
 The `copy-content` command allows you to collect and copy file contents from one or multiple paths directly to your clipboard, terminal, or file.
 
-Unlike the `tree` command, this command does **not use `.shtk.json` configuration**. It strictly follows the paths provided by the user.
+Paths shown in the output are always formatted relative to the current execution directory (`process.cwd()`) using forward slashes (`/`) for cross-platform compatibility.
+
+This command reads `.shtk.json` for output delivery configuration.
 
 [🇧🇷 Leia em Português](./copy-content.command.pt-BR.md)
 
@@ -59,6 +61,23 @@ shtk cpc src --paths-only
 shtk cpc src --file --output result.txt
 ```
 
+### Clipboard overrides
+
+Force copy as text:
+```bash
+shtk cpc src --copy-as text
+```
+
+Force copy as file:
+```bash
+shtk cpc src --copy-as file
+```
+
+Auto mode with a custom character limit:
+```bash
+shtk cpc src --copy-as auto --text-max-chars 3000
+```
+
 ---
 
 ## Options
@@ -70,6 +89,8 @@ shtk cpc src --file --output result.txt
 | `--output`       | Define output file name               |
 | `--paths-only`   | Output only file paths (no content)   |
 | `--no-separator` | Remove separators between file blocks |
+| `--copy-as`      | Set copy mode (`text`, `file`, `auto`) |
+| `--text-max-chars` | Max characters before copying as file |
 | `-h, --help`     | Show help                             |
 
 ---
@@ -81,6 +102,7 @@ shtk cpc src --file --output result.txt
 * Automatically removes duplicates
 * Skips binary files
 * Handles invalid paths gracefully
+* Uses relative paths in the final output
 
 ---
 
@@ -88,7 +110,7 @@ shtk cpc src --file --output result.txt
 
 ### Default
 
-* Copies content to clipboard
+* Copies content to clipboard. Depending on your configuration or size limit, it will either copy as plain text or save to a temporary file and copy that file to your clipboard.
 
 ### Summary
 
@@ -113,7 +135,7 @@ shtk cpc src --file --output result.txt
 
 ## Notes
 
-* This command **does not respect `.shtk.json`**
+* Respects the `output` section in `.shtk.json`
 * Designed for **explicit and flexible file selection**
 * Ideal for:
 
@@ -134,11 +156,11 @@ shtk cpc
 ## Best Practices
 
 * Use `--paths-only` when you only need structure
-* Use `--file` for large outputs
+* Use `--file` for large outputs that you want to save locally
 * Use multiline input for complex selections
 
 ---
 
 ## Summary
 
-The `copy-content` command is designed for **speed, flexibility, and precision**, allowing developers to extract exactly what they need from a project without relying on configuration.
+The `copy-content` command is designed for **speed, flexibility, and precision**, allowing developers to extract exactly what they need from a project.

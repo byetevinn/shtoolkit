@@ -9,8 +9,8 @@ CLI moderna para **explorar, filtrar e copiar conteúdo de projetos** com consis
 ## ✨ Features
 
 * 🌳 Gerar árvore de diretórios (`tree`)
-* 📋 Copiar conteúdo de arquivos (`copy-content` / `cpc`)
-* ⚙️ Configuração via `.shtk.json` (para `tree`)
+* 📋 Copiar conteúdo de arquivos (`copy-content` / `cpc`) com entrega inteligente de saída (área de transferência de texto ou anexo real de arquivo no Windows/WSL automaticamente)
+* ⚙️ Configuração centralizada via `.shtk.json` (para ignores de `tree` e configurações de `output`)
 * 🔍 Regras de ignore por nome, pasta e glob
 * 📦 Saída em JSON e YAML
 * 📊 Estatísticas detalhadas
@@ -87,9 +87,19 @@ Execute:
 shtk init
 ```
 
-Isso cria o arquivo `.shtk.json`, utilizado pelo comando `tree`.
+Isso cria o arquivo `.shtk.json`, utilizado pelos comandos para configurar listas de ignore e regras de entrega de saída (como limites de caracteres).
 
-> ℹ️ Observação: `copy-content` NÃO utiliza `.shtk.json` — ele segue apenas os caminhos informados.
+> ℹ️ Observação: tanto `tree` quanto `copy-content` leem as configurações de `output` do `.shtk.json` para decidir entre copiar como texto ou gerar um arquivo temporário no clipboard.
+
+---
+
+## 📋 Entrega Inteligente de Saída
+
+Tanto o comando `tree` quanto o `copy-content` suportam entrega inteligente de saída (Smart Output Delivery) para melhorar a eficiência de fluxos de desenvolvimento, especialmente ao anexar arquivos em modelos de IA (ex: ChatGPT, Claude):
+
+* **Modo (`output.mode = "auto"`)**: Por padrão, saídas pequenas (até `textMaxChars`, cujo padrão é `3000` caracteres) são copiadas diretamente como texto simples.
+* **Geração Automática de Arquivo**: Caso a saída ultrapasse o limite de caracteres, um arquivo temporário é criado automaticamente e o arquivo físico real é copiado para a área de transferência.
+* **Foco em Windows & WSL**: A integração com o clipboard de arquivo real é otimizada para funcionar tanto nativamente no Windows quanto dentro do WSL, resolvendo os caminhos do sistema dinamicamente.
 
 ---
 

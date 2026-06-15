@@ -4,7 +4,9 @@
 
 O comando `copy-content` permite coletar e copiar o conteúdo de arquivos e pastas diretamente para a área de transferência, terminal ou arquivo.
 
-Diferente do comando `tree`, este comando **não utiliza o `.shtk.json`**. Ele segue exatamente os caminhos informados pelo usuário.
+Os caminhos exibidos no output são sempre formatados de forma relativa ao diretório atual onde o comando é executado (`process.cwd()`) usando barras normais (`/`) para compatibilidade multiplataforma.
+
+Este comando lê a configuração `.shtk.json` para regras de entrega de saída (output delivery).
 
 [🇺🇸 Read in English](./copy-content.command.md)
 
@@ -59,6 +61,23 @@ shtk cpc src --paths-only
 shtk cpc src --file --output resultado.txt
 ```
 
+### Sobrescritas de área de transferência (clipboard)
+
+Forçar cópia como texto:
+```bash
+shtk cpc src --copy-as text
+```
+
+Forçar cópia como arquivo:
+```bash
+shtk cpc src --copy-as file
+```
+
+Modo automático com limite customizado de caracteres:
+```bash
+shtk cpc src --copy-as auto --text-max-chars 3000
+```
+
 ---
 
 ## Opções
@@ -70,6 +89,8 @@ shtk cpc src --file --output resultado.txt
 | `--output`       | Define o nome do arquivo                 |
 | `--paths-only`   | Mostra apenas os caminhos (sem conteúdo) |
 | `--no-separator` | Remove separadores entre blocos          |
+| `--copy-as`      | Define o modo de cópia (`text`, `file`, `auto`) |
+| `--text-max-chars` | Limite de caracteres antes de gerar arquivo |
 | `-h, --help`     | Exibe ajuda                              |
 
 ---
@@ -81,6 +102,7 @@ shtk cpc src --file --output resultado.txt
 * Remove duplicados automaticamente
 * Ignora arquivos binários
 * Trata caminhos inválidos sem quebrar a execução
+* Usa caminhos relativos na saída final
 
 ---
 
@@ -88,7 +110,7 @@ shtk cpc src --file --output resultado.txt
 
 ### Padrão
 
-* Copia conteúdo para a área de transferência
+* Copia o conteúdo para a área de transferência. Dependendo do limite de caracteres e configurações, pode copiar como texto ou gerar um arquivo temporário físico no Windows/WSL e colocá-lo no clipboard.
 
 ### Resumo
 
@@ -113,7 +135,7 @@ shtk cpc src --file --output resultado.txt
 
 ## Observações
 
-* Este comando **não respeita `.shtk.json`**
+* Respeita a seção `output` no `.shtk.json`
 * Foi projetado para ser **explícito e flexível**
 * Ideal para:
 
@@ -134,11 +156,11 @@ shtk cpc
 ## Boas Práticas
 
 * Use `--paths-only` para estrutura
-* Use `--file` para grandes volumes
+* Use `--file` para salvar grandes volumes localmente
 * Use entrada multilinha para seleções complexas
 
 ---
 
 ## Resumo
 
-O comando `copy-content` foi projetado para **velocidade, flexibilidade e precisão**, permitindo extrair exatamente o necessário sem depender de configuração.
+O comando `copy-content` foi projetado para **velocidade, flexibilidade e precisão**, permitindo extrair exatamente o necessário de forma inteligente.

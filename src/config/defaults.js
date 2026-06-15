@@ -20,3 +20,13 @@ export const DEFAULT_TREE_CONFIG = {
     patterns: [],
   },
 };
+
+export const DEFAULT_OUTPUT_CONFIG = {
+  mode: 'auto',
+  textMaxChars: 3000,
+  file: {
+    location: 'windowsTemp',
+    clipboard: 'file',
+  },
+};
+

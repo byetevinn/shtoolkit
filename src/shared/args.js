@@ -9,6 +9,8 @@ export function parseArgs(args) {
     dirsOnly: false,
     path: '.',
     help: false,
+    copyAs: null,
+    textMaxChars: null,
   };
 
   for (let index = 0; index < args.length; index += 1) {
@@ -44,6 +46,27 @@ export function parseArgs(args) {
       continue;
     }
 
+    if (arg === '--copy-as') {
+      const val = args[index + 1];
+      if (!val || !['text', 'file', 'auto'].includes(val)) {
+        throw new Error(`Invalid value for --copy-as: "${val || ''}". Expected text, file, or auto.`);
+      }
+      options.copyAs = val;
+      index += 1;
+      continue;
+    }
+
+    if (arg === '--text-max-chars') {
+      const val = args[index + 1];
+      const parsed = parseInt(val, 10);
+      if (Number.isNaN(parsed) || parsed < 0) {
+        throw new Error(`Invalid value for --text-max-chars: "${val || ''}". Expected a non-negative number.`);
+      }
+      options.textMaxChars = parsed;
+      index += 1;
+      continue;
+    }
+
     if (arg === '--output') {
       options.output = args[index + 1] ?? null;
       index += 1;
@@ -65,3 +88,4 @@ export function parseArgs(args) {
 
   return options;
 }
+

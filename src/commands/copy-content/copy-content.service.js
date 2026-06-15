@@ -43,6 +43,11 @@ function countLines(content) {
   return content.split(/\r?\n/).length;
 }
 
+function getDisplayPath(filePath) {
+  const relativePath = path.relative(process.cwd(), filePath);
+  return relativePath.split(path.sep).join('/');
+}
+
 function collectFilesFromDirectory(directoryPath, state) {
   function walk(currentPath) {
     let stat;
@@ -90,6 +95,8 @@ export function parseCopyContentArgs(args) {
     noSeparator: false,
     help: false,
     paths: [],
+    copyAs: null,
+    textMaxChars: null,
   };
 
   for (let index = 0; index < args.length; index += 1) {
@@ -117,6 +124,27 @@ export function parseCopyContentArgs(args) {
 
     if (arg === '--help' || arg === '-h') {
       options.help = true;
+      continue;
+    }
+
+    if (arg === '--copy-as') {
+      const val = args[index + 1];
+      if (!val || !['text', 'file', 'auto'].includes(val)) {
+        throw new Error(`Invalid value for --copy-as: "${val || ''}". Expected text, file, or auto.`);
+      }
+      options.copyAs = val;
+      index += 1;
+      continue;
+    }
+
+    if (arg === '--text-max-chars') {
+      const val = args[index + 1];
+      const parsed = parseInt(val, 10);
+      if (Number.isNaN(parsed) || parsed < 0) {
+        throw new Error(`Invalid value for --text-max-chars: "${val || ''}". Expected a non-negative number.`);
+      }
+      options.textMaxChars = parsed;
+      index += 1;
       continue;
     }
 
@@ -202,6 +230,7 @@ export function collectCopyContent(inputPaths, options = {}) {
 
       outputItems.push({
         path: filePath,
+        displayPath: getDisplayPath(filePath),
         content,
       });
 
@@ -217,6 +246,7 @@ export function collectCopyContent(inputPaths, options = {}) {
     return {
       outputItems: outputItems.map((item) => ({
         path: item.path,
+        displayPath: item.displayPath,
         content: '',
       })),
       stats,
@@ -248,7 +278,7 @@ export function formatCopyContentDetails(details) {
 
   if (details.notFound.length > 0) {
     sections.push(
-      ['❌ Not Found', ...details.notFound.map((item) => `- ${item}`)].join(
+      ['❌ Not Found', ...details.notFound.map((item) => `- ${getDisplayPath(item)}`)].join(
         '\n',
       ),
     );
@@ -258,7 +288,7 @@ export function formatCopyContentDetails(details) {
     sections.push(
       [
         '⏭ Skipped Binary',
-        ...details.skippedBinary.map((item) => `- ${item}`),
+        ...details.skippedBinary.map((item) => `- ${getDisplayPath(item)}`),
       ].join('\n'),
     );
   }
@@ -267,7 +297,7 @@ export function formatCopyContentDetails(details) {
     sections.push(
       [
         '⚠️ Failed to Read',
-        ...details.failedRead.map((item) => `- ${item}`),
+        ...details.failedRead.map((item) => `- ${getDisplayPath(item)}`),
       ].join('\n'),
     );
   }
@@ -276,7 +306,7 @@ export function formatCopyContentDetails(details) {
     sections.push(
       [
         '🚫 Failed Access',
-        ...details.failedAccess.map((item) => `- ${item}`),
+        ...details.failedAccess.map((item) => `- ${getDisplayPath(item)}`),
       ].join('\n'),
     );
   }

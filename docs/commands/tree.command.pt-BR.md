@@ -74,6 +74,28 @@ shtk tree --dirs-only
 shtk tree --path ./src
 ```
 
+### Sobrescritas de área de transferência (clipboard)
+
+Forçar cópia como texto:
+```bash
+shtk tree --copy-as text
+```
+
+Forçar cópia como arquivo:
+```bash
+shtk tree --copy-as file
+```
+
+Modo automático com limite de caracteres personalizado:
+```bash
+shtk tree --copy-as auto --text-max-chars 3000
+```
+
+Forçar cópia como arquivo YAML:
+```bash
+shtk tree --yaml --copy-as file
+```
+
 ---
 
 ## Opções
@@ -88,6 +110,8 @@ shtk tree --path ./src
 | `--depth <número>`   | Limita a profundidade    |
 | `--dirs-only`        | Inclui apenas diretórios |
 | `--path <dir>`       | Define o caminho alvo    |
+| `--copy-as`          | Modo de cópia (`text`, `file`, `auto`) |
+| `--text-max-chars`   | Limite de caracteres antes de gerar arquivo |
 | `-h, --help`         | Exibe ajuda              |
 
 ---
@@ -99,17 +123,26 @@ shtk tree --path ./src
 * Percorre diretórios recursivamente
 * Ordena arquivos e pastas alfabeticamente
 * Usa JSON como formato padrão de saída
+* Integra-se ao `deliverOutput` para copiar os dados de saída de maneira inteligente como texto ou arquivo temporário físico no Windows/WSL
 
 ---
 
 ## Configuração (.shtk.json)
 
-O comando `tree` respeita regras de ignore definidas no `.shtk.json`.
+O comando `tree` respeita regras de ignore e regras de entrega de saída (output delivery) definidas no `.shtk.json`.
 
 ### Exemplo
 
 ```json
 {
+  "output": {
+    "mode": "auto",
+    "textMaxChars": 3000,
+    "file": {
+      "location": "windowsTemp",
+      "clipboard": "file"
+    }
+  },
   "tree": {
     "ignore": {
       "names": ["node_modules", ".git"],

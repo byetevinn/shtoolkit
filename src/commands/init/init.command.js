@@ -11,6 +11,17 @@ export function runInitCommand() {
   }
 
   const defaultConfig = {
+    output: {
+      mode: 'auto',
+      textMaxChars: 3000,
+      file: {
+        location: 'windowsTemp',
+        clipboard: 'file'
+      }
+    },
+    copyContent: {
+      pathMode: 'relative'
+    },
     tree: {
       ignore: {
         names: ['node_modules', '.git', 'dist', 'venv', '__pycache__'],

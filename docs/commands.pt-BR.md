@@ -13,7 +13,8 @@ Esta seção apresenta uma visão geral de todos os comandos disponíveis no **s
 Copia o conteúdo de arquivos a partir de um ou mais caminhos.
 
 * Entrada flexível (arquivos, pastas, multilinha)
-* Não depende de configuração
+* Caminhos de arquivo relativos
+* Suporte a entrega inteligente de saída (texto ou arquivo físico)
 
 👉 [Ver documentação](./commands/copy-content.command.pt-BR.md)
 
@@ -25,6 +26,7 @@ Visualiza a estrutura do projeto.
 
 * Suporta formatos JSON, YAML e pretty
 * Utiliza `.shtk.json` para configuração
+* Suporte a entrega inteligente de saída (texto ou arquivo físico)
 
 👉 [Ver documentação](./commands/tree.command.pt-BR.md)
 

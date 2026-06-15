@@ -1,5 +1,5 @@
 import fs from 'node:fs';
-import { copyToClipboard } from '../../shared/clipboard.js';
+import { deliverOutput } from '../../shared/output/output.delivery.js';
 import { formatCopyContentOutput } from './copy-content.formatters.js';
 import {
   collectCopyContent,
@@ -9,7 +9,14 @@ import {
 } from './copy-content.service.js';
 
 export function runCopyContentCommand(args) {
-  const options = parseCopyContentArgs(args);
+  let options;
+  try {
+    options = parseCopyContentArgs(args);
+  } catch (error) {
+    console.error(error.message);
+    process.exitCode = 1;
+    return;
+  }
 
   if (options.help) {
     console.log(
@@ -27,12 +34,14 @@ docs
 README.md"
 
 Options:
-  --stdout           Print output to terminal
-  --file             Save output to file
-  --output <file>    Define output file name
-  --paths-only       Output only resolved file paths
-  --no-separator     Remove separators between file blocks
-  -h, --help         Show help
+  --stdout                 Print output to terminal
+  --file                   Save output to file
+  --output <file>          Define output file name
+  --paths-only             Output only resolved file paths
+  --no-separator           Remove separators between file blocks
+  --copy-as <text|file|auto>  Set the copy mode (default: auto)
+  --text-max-chars <n>     Set maximum characters before saving to file (default: 3000)
+  -h, --help               Show help
 `.trim(),
     );
     return;
@@ -100,20 +109,38 @@ Options:
     return;
   }
 
-  const copied = copyToClipboard(output);
-
-  if (!copied) {
-    console.error('Clipboard is not available.');
-    process.exitCode = 1;
-    return;
+  const deliveryConfig = {};
+  if (options.copyAs) {
+    deliveryConfig.mode = options.copyAs;
+  }
+  if (options.textMaxChars !== null) {
+    deliveryConfig.textMaxChars = options.textMaxChars;
   }
 
-  console.log('Content copied to clipboard');
-  console.log();
-  console.log(formatCopyContentSummary(result.stats));
+  try {
+    const delivery = deliverOutput({
+      content: output,
+      fileName: 'shtoolkit-copy-content.txt',
+      config: { output: deliveryConfig },
+    });
 
-  if (detailsOutput) {
+    if (delivery.delivery === 'text') {
+      console.log('✅ Content copied to clipboard as text');
+    } else if (delivery.delivery === 'file') {
+      console.log('✅ Output file copied to clipboard');
+      const displayPath = delivery.file.windowsPath || delivery.file.filePath;
+      console.log(`📄 File: ${displayPath}`);
+    }
+
     console.log();
-    console.log(detailsOutput);
+    console.log(formatCopyContentSummary(result.stats));
+
+    if (detailsOutput) {
+      console.log();
+      console.log(detailsOutput);
+    }
+  } catch (error) {
+    console.error(error.message);
+    process.exitCode = 1;
   }
 }

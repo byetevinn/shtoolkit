@@ -4,12 +4,12 @@ export function formatCopyContentOutput(items, options = {}) {
   }
 
   if (options.pathsOnly) {
-    return items.map((item) => item.path).join('\n');
+    return items.map((item) => item.displayPath || item.path).join('\n');
   }
 
   const separator = options.noSeparator
     ? '\n\n'
     : '\n\n----------------------------------------\n\n';
 
-  return items.map((item) => `${item.path}\n\n${item.content}`).join(separator);
+  return items.map((item) => `${item.displayPath || item.path}\n\n${item.content}`).join(separator);
 }
